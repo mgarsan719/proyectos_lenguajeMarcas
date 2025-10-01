@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Calculadora (con IA básica)</title>
+<style>
+:root{
+--bg:#0f1724; --panel:#0b1220; --accent:#7c3aed; --muted:#9aa4b2; --glass:rgba(255,255,255,0.04);
+--btn:#111827; --btn-hover:#111b2a;
+}
+*{box-sizing:border-box}
+body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:linear-gradient(180deg,#071025 0%, #071827 100%); color:#ecf0f3; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px}
+
+.card{width:380px; max-width:96vw; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06)); border-radius:16px; padding:18px; box-shadow:0 8px 30px rgba(2,6,23,0.7)}
+.header{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px}
+h1{font-size:18px; margin:0}
+.sub{font-size:12px; color:var(--muted)}
+
+.display{background:var(--panel); border-radius:12px; padding:12px; min-height:72px; display:flex; flex-direction:column; justify-content:center; align-items:flex-end; gap:6px}
+.expr{font-size:14px; color:var(--muted); word-break:break-all}
+.result{font-size:28px; font-weight:700}
+
+.keyboard{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:12px}
+button.key{background:var(--btn); border:1px solid rgba(255,255,255,0.04); padding:14px; border-radius:10px; font-size:16px; cursor:pointer}
+button.key:hover{background:var(--btn-hover)}
+button.op{background:linear-gradient(180deg, rgba(124,58,237,0.12), rgba(124,58,237,0.08)); border:1px solid rgba(124,58,237,0.18); color:var(--accent)}
+button.equal{grid-column:span 2; background:var(--accent); color:white; font-weight:700}
+
+.controls{display:flex; gap:8px; margin-top:12px; align-items:center}
+.ia-input{flex:1; background:var(--glass); padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); color:inherit}
+.small{font-size:13px; color:var(--muted)}
+
+footer{margin-top:10px; font-size:12px; color:var(--muted); text-align:center}
+
+@media (max-width:420px){ .card{padding:14px} .result{font-size:24px} }
+</style>
+</head>
+<body>
+<div class="card" role="application" aria-label="Calculadora con IA básica">
+  <div class="header">
+    <div>
+      <h1>Calculadora</h1>
+      <div class="sub">Modo clásico + entrada en lenguaje natural (ES)</div>
+    </div>
+    <div class="small">Hecha con HTML/CSS/JS</div>
+  </div>
+
+  <div class="display" id="display" aria-live="polite">
+    <div class="expr" id="expression">0</div>
+    <div class="result" id="result">0</div>
+  </div>
+
+  <div class="keyboard" id="keys">
+    <button class="key" data-val="7">7</button>
+    <button class="key" data-val="8">8</button>
+    <button class="key" data-val="9">9</button>
+    <button class="key op" data-val="/">÷</button>
+
+    <button class="key" data-val="4">4</button>
+    <button class="key" data-val="5">5</button>
+    <button class="key" data-val="6">6</button>
+    <button class="key op" data-val="*">×</button>
+
+    <button class="key" data-val="1">1</button>
+    <button class="key" data-val="2">2</button>
+    <button class="key" data-val="3">3</button>
+    <button class="key op" data-val="-">−</button>
+
+    <button class="key" data-val="0">0</button>
+    <button class="key" data-val=".">.</button>
+    <button class="key" id="clear">C</button>
+    <button class="key op" data-val="+">+</button>
+
+    <button class="key" id="back">⌫</button>
+    <button class="key" id="paren">( )</button>
+    <button class="key equal" id="equals">=</button>
+    <button class="key" id="ans">Ans</button>
+  </div>
+
+  <div class="controls">
+    <input id="iaInput" class="ia-input" placeholder="Ej.: suma 5 y 3, 12 entre 4, raíz de 9" aria-label="Entrada en lenguaje natural" />
+    <button class="key op" id="runIA">Calcular</button>
+  </div>
+
+  <footer>Soporta operaciones básicas, paréntesis y frases simples en español.</footer>
+</div>
+
+<script>
+  const exprEl = document.getElementById('expression');
+  const resultEl = document.getElementById('result');
+  const keys = document.getElementById('keys');
+  const iaInput = document.getElementById('iaInput');
+  const runIA = document.getElementById('runIA');
+
+  let expression = "";
+  let lastResult = 0;
+
+  function refresh() {
+    exprEl.textContent = expression || "0";
+    try {
+      resultEl.textContent = eval(expression) || "0";
+    } catch {
+      resultEl.textContent = "--";
+    }
+  }
+
+  // Teclado clásico
+  keys.addEventListener("click", e => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+
+    if (btn.id === "clear") {
+      expression = "";
+    } else if (btn.id === "back") {
+      expression = expression.slice(0, -1);
+    } else if (btn.id === "equals") {
+      try {
+        lastResult = eval(expression);
+        expression = String(lastResult);
+      } catch {
+        expression = "";
+      }
+    } else if (btn.id === "ans") {
+      expression += lastResult;
+    } else if (btn.id === "paren") {
+      // alterna paréntesis
+      expression += expression.includes("(") && !expression.includes(")") ? ")" : "(";
+    } else {
+      expression += btn.dataset.val || "";
+    }
+    refresh();
+  });
+
+  // --- MODO IA ---
+  function interpretarFrase(frase) {
+    frase = frase.toLowerCase().trim();
+
+    // Palabras clave -> reemplazo
+    frase = frase.replace(/suma|más|mas/g, "+");
+    frase = frase.replace(/resta|menos/g, "-");
+    frase = frase.replace(/multiplica|multiplicado|por/g, "*");
+    frase = frase.replace(/divide|entre/g, "/");
+    frase = frase.replace(/raiz|raíz de/g, "Math.sqrt");
+
+    // Quitar palabras inútiles
+    frase = frase.replace(/y|el|la|de|por favor/g, " ");
+
+    return frase;
+  }
+
+  runIA.addEventListener("click", () => {
+    const raw = iaInput.value;
+    if (!raw) return;
+
+    let interpre = interpretarFrase(raw);
+
+    try {
+      let res = eval(interpre);
+      expression = String(res);
+      lastResult = res;
+      refresh();
+    } catch {
+      exprEl.textContent = raw;
+      resultEl.textContent = "Error";
+    }
+  });
+
+  refresh();
+</script>
+</body>
+</html>

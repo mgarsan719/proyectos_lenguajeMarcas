@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f2f2f2;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .calculadora {
+            width: 300px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .pantalla {
+            width: 100%;
+            height: 60px;
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 2em;
+            text-align: right;
+            border: none;
+            border-radius: 10px;
+            background-color: #eee;
+            box-sizing: border-box;
+            color: #333;
+        }
+
+        .botones {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .botones button {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 10px;
+            background-color: #e0e0e0;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            color: #333;
+        }
+
+        .botones button:hover {
+            background-color: #d0d0d0;
+        }
+
+        .botones .operador {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .botones .igual {
+            background-color: #4CAF50;
+            color: white;
+            grid-column: span 2; /* Para que el botón de igual ocupe dos columnas */
+        }
+
+        .botones .cero {
+            grid-column: span 2; /* Para que el botón de cero ocupe dos columnas */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculadora">
+        <input type="text" class="pantalla" disabled>
+        <div class="botones">
+            <button class="operador">C</button>
+            <button class="operador">/</button>
+            <button class="operador">*</button>
+            <button class="operador">-</button>
+            <button>7</button>
+            <button>8</button>
+            <button>9</button>
+            <button class="operador">+</button>
+            <button>4</button>
+            <button>5</button>
+            <button>6</button>
+            <button>.</button>
+            <button>1</button>
+            <button>2</button>
+            <button>3</button>
+            <button class="igual">=</button>
+            <button class="cero">0</button>
+        </div>
+    </div>
+
+    <script>
+        const pantalla = document.querySelector('.pantalla');
+        const botones = document.querySelectorAll('.botones button');
+
+        let expresion = '';
+
+        botones.forEach(boton => {
+            boton.addEventListener('click', () => {
+                const valor = boton.textContent;
+
+                if (valor === 'C') {
+                    expresion = '';
+                    pantalla.value = '';
+                } else if (valor === '=') {
+                    try {
+                        // Utiliza `eval()` para evaluar la expresión
+                        pantalla.value = eval(expresion);
+                        expresion = pantalla.value;
+                    } catch (error) {
+                        pantalla.value = 'Error';
+                        expresion = '';
+                    }
+                } else {
+                    expresion += valor;
+                    pantalla.value = expresion;
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
