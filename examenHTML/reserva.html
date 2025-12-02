@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de reserva — EcoRutas Andalucía</title>
+</head>
+<body>
+    <header>
+		<h1>Formulario de reserva — EcoRutas Andalucía</h1>
+		<a href="index.html">Volver a la página principal</a>
+    </header>
+    <main>
+		<h2>Datos de la reserva</h2>
+		<form>
+			<!--Campos para datos personales-->
+			<fieldset>
+				<legend>Datos presonales</legend>
+				<label for="nombre">Nombre:</label>
+				<input type="text" id="nombre" name="nombre" required>
+				<br>
+				<br>
+				<label for="apellidos">Apellidos:</label>
+				<input type="text" id="apellidos" name="apellidos" required>
+				<br>
+				<br>
+				<label for="correo">Correo electrónico:</label>
+				<input type="email" id="correo" name="correo" required>
+				<br>
+				<br>
+				<label for="telefono">Teléfono:</label>
+				<input type="tel" id="telefono" name="telefono" required>
+			</fieldset>
+		
+			<!--Campos para detalles de la actividad-->
+			<fieldset>
+				<legend>Detalles de la actividad</legend>
+
+				<label for="actividad">Actividad:</label>
+				<select id="actividad" name="actividad">
+					<option>Ruta bosque mediterraneo</option>
+					<option>Observación de aves</option>
+					<option>Taller fotografia naturaleza</option>
+					<option>Fin de semana espacial</option>
+				</select>
+				<br>
+				<br>
+				<label for="fecha">Fecha:</label>
+				<input type="date" id="fecha" name="fecha">
+				<br>
+				<br>
+				<label for="personas">Número de personas:</label>
+				<input type="number" id="personas" name="personas" value="1" min="1">
+			</fieldset>
+
+			<!--Campos para preferencias y comentarios-->
+			<fieldset>
+				<legend>Preferencias y comentarios</legend>
+
+				<p>Turno preferente:</p>
+				<label>
+					<input type="radio" name="turno" value="manana" checked>
+					Mañana
+				</label>
+				<label>
+					<input type="radio" name="turno" value="tarde">
+					Tarde
+				</label>
+				<label>
+					<input type="radio" name="turno" value="indiferente">
+					Indiferente
+				</label>
+				<br><br>
+
+				<label>
+					<input type="checkbox" name="info" checked>
+					Deseo recibir información sobre nuevas actividades.
+				</label>
+				<br><br>
+
+				<label for="comentarios">Comentarios o necesidades especiales:</label><br>
+				<textarea id="comentarios" name="comentarios" rows="6" cols="60"></textarea>
+			</fieldset>
+		
+			<!--Botones de borrar y enviar-->
+			<br>
+			<input type="submit" value="Enviar reserva">
+			<input type="reset"  value="Borrar formulario">
+		</form>
+    </main>
+    <footer>
+		<address>
+			<p>EcoRutas Andalucía — Contacto: <a href="mailto:info@ecorutasandalucia.com">ecorutasandalucia.com</a></p>
+		</address>
+    </footer>
+</body>
+
+</html>
