@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <header>
+        <h1>COMPRA BILLETES</h1>
+    </header>
+    <main>
+        <form>
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" style="width:350px;"><br><br>
+
+            <span>Número de piernas:</span><br>
+            <span>- menos de 2:</span>
+            <input type="radio" name="piernas" value="menos2">
+            <br>
+            <span>- 2 a 3:</span>
+            <input type="radio" name="piernas" value="2a3" checked>
+            <br>
+            <span>- más de 3:</span>
+            <input type="radio" name="piernas" value="mas3">
+            <br><br>
+
+            <label>¿Se marea en los viajes espaciales?:</label>
+            <input type="checkbox" name="mareo"><br><br>
+
+            <label for="liga">Calificación de la liga:</label>
+            <select id="liga" name="liga">
+                <option>Muy mala</option>
+                <option>Media</option>
+                <option>Buena</option>
+                <option>Muy Buena</option>
+            </select>
+            <br><br>
+
+            <label for="sugerencias">Sugerencias:</label><br>
+            <textarea id="sugerencias" name="sugerencias" rows="5" cols="50"></textarea>
+            <br><br>
+            <input type="submit" value="Enviar">
+        </form>
+    </main>
+    <footer>
+        <br><br>
+        <a href="index.html">Ir a la página principal</a>
+    </footer>
+</body>
+
+</html>
