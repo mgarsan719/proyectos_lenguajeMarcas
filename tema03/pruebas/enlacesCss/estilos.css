@@ -1,0 +1,21 @@
+/* Estilo para los enlaces que sean pdf */
+a[href$=".pdf"] {
+    color: red;
+}
+
+/* Estilo para los enlaces a webs seguras */
+a[href^="https"]{
+    color:green;
+}
+
+/* Estilo para los enlaces que tengan el atributo title */
+a[title]
+{
+    color:gold;
+}
+
+/* Enlaces que son correos en morado*/
+a[href^="mailto"]
+{
+    color:purple;
+}
