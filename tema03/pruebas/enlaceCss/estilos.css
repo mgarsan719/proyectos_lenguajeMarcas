@@ -1,3 +1,22 @@
-a {
+/* 1. Estado inicial: Enlace no visitado */
+a:link {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+}
 
+/* 2. Estado visitado: El usuario ya hizo clic anteriormente */
+a:visited {
+    color: #8e44ad;
+}
+
+/* 3. Estado hover: El usuario pasa el ratón por encima */
+a:hover {
+    color: #e74c3c;
+    text-decoration: underline;
+}
+
+/* 4. Estado activo: El momento exacto en que se hace clic */
+a:active {
+    color: #f1c40f;
 }

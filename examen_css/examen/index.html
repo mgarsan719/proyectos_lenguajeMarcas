@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Examen Selectores Avanzados - DAW</title>
+    <style>
+        #top-bar {
+            background-color: #2c3e50;
+            color: white;
+        }
+    </style>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+
+    <header id="top-bar">
+        <h1>Panel de Administración</h1>
+        <nav class="menu-principal">
+            <a href="index.html">Dashboard</a>
+            <a href="config.php">Ajustes</a>
+            <a href="guia_usuario.pdf">Manual (PDF)</a>
+        </nav>
+    </header>
+
+
+    <main>
+        <section class="data-view">
+            <h2>Resumen de Actividad</h2>
+            <p>Este es el párrafo de introducción al sistema.</p>
+            <p>Este párrafo debe destacar por ser hermano del anterior.</p>
+           
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Usuario</th><th>Estado</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>01</td><td>Admin</td><td>Activo</td></tr>
+                    <tr><td>02</td><td>Editor</td><td>Pendiente</td></tr>
+                    <tr><td>03</td><td>Guest</td><td>Inactivo</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+
+        <section class="form-container" style="background-color: #f9f9f9; padding: 15px;">
+            <form id="user-form" >
+                <input type="text" placeholder="Username" required>
+                <input type="email" placeholder="Email corporativo" required>
+                <button type="submit">Guardar</button>
+                <button type="button" class="btn-cancel">Cancelar</button>
+            </form>
+        </section>
+    </main>
+
+
+</body>
+</html>

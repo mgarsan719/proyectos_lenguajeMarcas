@@ -1,0 +1,58 @@
+/*Act 3*/
+* {
+    margin:0;
+}
+
+/*Act 4*/
+.menu-principal {
+    border-bottom: 3px solid #3498db;
+}
+
+/*Act 5*/
+a [href $= ".pdf"] {
+    border: 2px dashed #e74c3c;
+    text-transform: uppercase;
+}
+
+/*Act 6*/
+nav > a {
+    font-weight: bold;
+    color: #3498db;
+}
+
+/*Act 7*/
+h2 + p {
+    background-color: #d4edda;
+}
+
+/*Act 8*/
+h2 ~ p {
+    opacity: 0.6;
+}
+
+/*Act 9*/
+nav a:hover {
+    background-color: #fff3cd;
+}
+
+/*Act 10*/
+tr:nth-child(even) {
+    background-color: #f4f4f9;
+}
+
+/*Act 11*/
+input:focus {
+    background-color: #fff3cd;
+}
+
+/*Act 12*/
+button:not(.btn-cancel) {
+    background-color: #2c3e50;
+    color: #ffffff;
+}
+
+/*Act 13*/
+h1::after {
+    content: " ➔";
+    display: inline-block;
+}
