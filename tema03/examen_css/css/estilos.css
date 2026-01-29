@@ -9,7 +9,7 @@
 }
 
 /*Act 5*/
-a [href $= ".pdf"] {
+a[href $= ".pdf"] {
     border: 2px dashed #e74c3c;
     text-transform: uppercase;
 }
