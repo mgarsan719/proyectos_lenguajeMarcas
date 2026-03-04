@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CreaPalabras - Juego Interactivo de Vocabulario</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --secondary: #50E3C2;
+            --accent: #FFD700;
+            --error: #FF6B6B;
+            --success: #7ED321;
+            --text: #2C3E50;
+            --bg: #F0F4F8;
+            --card-bg: #FFFFFF;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-active: 0 2px 3px rgba(0,0,0,0.1);
+        }
+
+
+        * {
+            box-sizing: border-box;
+            touch-action: manipulation; /* Optimización táctil */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+
+        /* --- HEADER --- */
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+
+        h1 { margin: 0; font-size: 1.8rem; display: flex; align-items: center; gap: 10px; }
+        .stats-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+
+        /* --- LAYOUT --- */
+        main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 1rem;
+            padding: 1rem;
+            overflow: hidden;
+        }
+
+
+        /* --- GAME AREA (LEFT) --- */
+        .game-board {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+
+        /* Display Area */
+        .current-word-display {
+            width: 100%;
+            min-height: 100px;
+            background: #E8EEF4;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2rem;
+            font-size: 4rem;
+            font-weight: 800;
+            letter-spacing: 5px;
+            color: var(--primary);
+            border: 3px dashed #CBD5E0;
+            transition: all 0.3s ease;
+        }
+       
+        .current-word-display.active { border-color: var(--primary); background: white; border-style: solid;}
+        .current-word-display.valid { border-color: var(--success); color: var(--success); }
+        .current-word-display.invalid { animation: shake 0.5s; border-color: var(--error); color: var(--error); }
+
+
+        /* Letter Grid */
+        .letters-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 2rem;
+            max-width: 800px;
+        }
+
+
+        .letter-btn {
+            width: 80px;
+            height: 80px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 15px;
+            background: white;
+            color: var(--text);
+            box-shadow: 0 6px 0 #CBD5E0;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s, background 0.2s;
+            position: relative;
+            top: 0;
+        }
+
+
+        .letter-btn:active, .letter-btn.pressed {
+            top: 6px;
+            box-shadow: 0 0 0 #CBD5E0;
+            background: #f0f0f0;
+        }
+
+
+        .letter-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            top: 6px;
+            box-shadow: none;
+        }
+
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            justify-content: center;
+        }
+
+
+        .btn {
+            padding: 1rem 2rem;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+        }
+       
+        .btn:active { transform: translateY(4px); box-shadow: none; }
+        .btn-clear { background: var(--error); color: white; }
+        .btn-check { background: var(--success); color: white; flex-grow: 0.5; }
+        .btn-reset { background: var(--secondary); color: var(--text); }
+
+
+        /* --- SIDEBAR (RIGHT) --- */
+        .sidebar {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+
+        .sidebar h2 { margin-top: 0; color: var(--primary); text-align: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+       
+        .found-words-list {
+            flex: 1;
+            overflow-y: auto;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+
+        .found-word-item {
+            background: #f8f9fa;
+            margin-bottom: 8px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            animation: slideIn 0.3s ease-out;
+            border-left: 4px solid var(--secondary);
+        }
+
+
+        .longest-word-container {
+            margin-top: auto;
+            background: #FFF9C4; /* Yellowish */
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid var(--accent);
+        }
+       
+        .longest-word-label { font-size: 0.9rem; color: #888; text-transform: uppercase; }
+        .longest-word-value { font-size: 1.8rem; font-weight: bold; color: var(--text); display: block; margin-top: 5px; word-break: break-all;}
+
+
+        /* --- ANIMATIONS --- */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
+        }
+
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 900px) {
+            main { grid-template-columns: 1fr; grid-template-rows: 1fr 200px; }
+            .letter-btn { width: 60px; height: 60px; font-size: 1.8rem; }
+            .current-word-display { font-size: 2.5rem; }
+            .sidebar { flex-direction: row; align-items: center; padding: 0.5rem; gap: 1rem; }
+            .found-words-list { display: flex; flex-direction: row; overflow-x: auto; gap: 10px; height: 100%; align-items: center;}
+            .found-word-item { margin: 0; width: max-content;}
+            .longest-word-container { min-width: 150px; }
+            .sidebar h2 { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+
+<header>
+    <h1>
+        <span>🅰️</span> CreaPalabras
+    </h1>
+    <div class="stats-badge">
+        Total Encontradas: <span id="total-count">0</span>
+    </div>
+    <button class="btn btn-reset" onclick="game.resetGame()" style="font-size: 1rem; padding: 0.5rem 1rem;">🔄 Nueva Partida</button>
+</header>
+
+
+<main>
+    <!-- Área de Juego -->
+    <section class="game-board">
+        <div id="display" class="current-word-display">_ _ _</div>
+       
+        <div id="letters-container" class="letters-grid">
+            <!-- Las letras se generan aquí dinámicamente -->
+        </div>
+
+
+        <div class="controls">
+            <button class="btn btn-clear" onclick="game.clearCurrent()">Borrar</button>
+            <button class="btn btn-check" onclick="game.submitWord()">✅ VALIDAR</button>
+        </div>
+    </section>
+
+
+    <!-- Barra Lateral de Progreso -->
+    <aside class="sidebar">
+        <h2>Palabras Encontradas</h2>
+        <ul id="found-list" class="found-words-list">
+            <!-- Lista vacía inicial -->
+        </ul>
+       
+        <div class="longest-word-container">
+            <div class="longest-word-label">Récord (Palabra más larga)</div>
+            <span id="longest-word" class="longest-word-value">-</span>
+        </div>
+    </aside>
+</main>
+
+
+<script>
+    /**
+     * DICCIONARIO BÁSICO INCORPORADO
+     * Una lista comprimida de palabras comunes para entorno educativo.
+     * En un entorno real, esto se conectaría a una API.
+     */
+    const DICTIONARY_DATA = [
+        "CASA","PERRO","GATO","SOL","LUNA","MESA","SILLA","LIBRO","LAPIZ","PAPEL",
+        "AGUA","FUEGO","TIERRA","AIRE","MANO","PIE","OJO","BOCA","NARIZ","PELO",
+        "FLOR","ARBOL","RIO","MAR","MONTAÑA","CIELO","NUBE","LLUVIA","NIEVE","VIENTO",
+        "AMIGO","PADRE","MADRE","HERMANO","ABUELO","NIÑO","NIÑA","HOMBRE","MUJER",
+        "ESCUELA","CLASE","PATIO","JUEGO","PELOTA","MUÑECA","COCHE","TREN","BARCO",
+        "AVION","BICI","PAN","LECHE","FRUTA","CARNE","PESCADO","HUEVO","QUESO",
+        "ROJO","AZUL","VERDE","AMARILLO","BLANCO","NEGRO","GRIS","ROSA","NARANJA",
+        "UNO","DOS","TRES","CUATRO","CINCO","SEIS","SIETE","OCHO","NUEVE","DIEZ",
+        "GRANDE","PEQUEÑO","ALTO","BAJO","GORDO","FLACO","BUENO","MALO","FELIZ","TRISTE",
+        "CORRER","SALTAR","COMER","BEBER","DORMIR","JUGAR","LEER","ESCRIBIR","CANTAR",
+        "BAILAR","PINTAR","DIBUJAR","HABLAR","ESCUCHAR","MIRAR","TOCAR","OLER",
+        "PERA","MANZANA","UVA","LIMON","MELON","SANDIA","PLATANO","FRESA","CEREZA",
+        "LEON","TIGRE","OSO","ELEFANTE","JIRAFA","MONO","CABALLO","VACA","CERDO",
+        "OVEJA","GALLINA","PATO","PAJARO","PEZ","RANA","SERPIENTE","TORTUGA",
+        "CAMISA","PANTALON","VESTIDO","FALDA","ZAPATO","CALCETIN","GORRO","GUANTE",
+        "MESA","SILLA","CAMA","ARMARIO","ESPEJO","RELOJ","LAMPARA","TELE","RADIO",
+        "PUERTA","VENTANA","PARED","SUELO","TECHO","JARDIN","CALLE","PARQUE","PLAZA",
+        "CIUDAD","PUEBLO","PAIS","MUNDO","TIEMPO","HORA","DIA","NOCHE","SEMANA",
+        "MES","AÑO","HOY","AYER","MAÑANA","AHORA","LUEGO","NUNCA","SIEMPRE",
+        "HOLA","ADIOS","GRACIAS","PORFAVOR","PERDON","SI","NO","QUIZAS","TALVEZ",
+        "YO","TU","EL","ELLA","NOSOTROS","VOSOTROS","ELLOS","MIO","TUYO","SUYO",
+        "ESTE","ESE","AQUEL","AQUI","ALLI","ALLA","DONDE","CUANDO","COMO","PORQUE",
+        "VIDA","AMOR","PAZ","LUZ","OSCURIDAD","FUERZA","VALOR","MIEDO","ALEGRIA",
+        "DOLOR","SALUD","ENFERMEDAD","DINERO","TRABAJO","ESTUDIO","ARTE","MUSICA",
+        "CINE","TEATRO","FOTO","VIDEO","ORDENADOR","MOVIL","INTERNET","CORREO",
+        "CARTA","REGALO","FIESTA","CUMPLEAÑOS","NAVIDAD","VERANO","INVIERNO","OTOÑO",
+        "PRIMAVERA","CALOR","FRIO","HAMBRE","SED","SUEÑO","RISA","LLANTO", "SAL", "MAR",
+        "GOL", "LUZ", "PAZ", "REY", "LEY", "VOZ", "TOS", "DOS", "TRES", "SED", "PEZ"
+    ];
+
+
+    // Convertir a Set para búsquedas rápidas O(1)
+    const DICTIONARY = new Set(DICTIONARY_DATA);
+
+
+    class WordGame {
+        constructor() {
+            this.vowels = 'AEIOU';
+            this.consonants = 'BCDFGHJKLMNPQRSTVWXYZ';
+           
+            // Estado del juego
+            this.availableLetters = [];
+            this.currentInput = []; // Índices de las letras usadas
+            this.foundWords = new Set();
+            this.longestWord = "";
+            this.letterIdCounter = 0;
+
+
+            // Elementos del DOM
+            this.dom = {
+                display: document.getElementById('display'),
+                lettersContainer: document.getElementById('letters-container'),
+                foundList: document.getElementById('found-list'),
+                totalCount: document.getElementById('total-count'),
+                longestWordDisplay: document.getElementById('longest-word')
+            };
+
+
+            this.initGame();
+        }
+
+
+        initGame() {
+            this.generateLetters();
+            this.resetRoundState();
+            this.foundWords.clear();
+            this.longestWord = "";
+            this.updateUI();
+            this.clearDOMList();
+        }
+
+
+        resetGame() {
+            if(confirm('¿Seguro que quieres reiniciar el juego? Se perderá el progreso.')) {
+                this.dom.display.classList.remove('valid', 'invalid');
+                this.initGame();
+            }
+        }
+
+
+        generateLetters() {
+            this.availableLetters = [];
+            // Asegurar un mínimo de vocales para jugabilidad (4 vocales, 6 consonantes)
+            for (let i = 0; i < 4; i++) {
+                this.availableLetters.push({
+                    char: this.vowels.charAt(Math.floor(Math.random() * this.vowels.length)),
+                    id: i
+                });
+            }
+            for (let i = 4; i < 10; i++) {
+                this.availableLetters.push({
+                    char: this.consonants.charAt(Math.floor(Math.random() * this.consonants.length)),
+                    id: i
+                });
+            }
+            // Barajar
+            this.availableLetters.sort(() => Math.random() - 0.5);
+            this.renderLetters();
+        }
+
+
+        renderLetters() {
+            this.dom.lettersContainer.innerHTML = '';
+            this.availableLetters.forEach((letterObj) => {
+                const btn = document.createElement('button');
+                btn.className = 'letter-btn';
+                btn.innerText = letterObj.char;
+                btn.dataset.id = letterObj.id;
+               
+                // Eventos Touch/Click
+                btn.addEventListener('click', () => this.handleLetterClick(letterObj.id, btn));
+               
+                this.dom.lettersContainer.appendChild(btn);
+            });
+        }
+
+
+        handleLetterClick(id, btnElement) {
+            // Sonido de clic suave (opcional, omitido para mantener pureza de archivo, usamos visual)
+           
+            // Añadir a input
+            this.currentInput.push(id);
+            btnElement.disabled = true;
+            btnElement.classList.add('pressed');
+           
+            this.updateDisplay();
+        }
+
+
+        resetRoundState() {
+            this.currentInput = [];
+            // Reactivar todos los botones
+            const btns = document.querySelectorAll('.letter-btn');
+            btns.forEach(btn => {
+                btn.disabled = false;
+                btn.classList.remove('pressed');
+            });
+            this.updateDisplay();
+            this.dom.display.classList.remove('valid', 'invalid');
+        }
+
+
+        clearCurrent() {
+            this.resetRoundState();
+        }
+
+
+        updateDisplay() {
+            if (this.currentInput.length === 0) {
+                this.dom.display.innerText = '_ _ _';
+                this.dom.display.classList.remove('active');
+            } else {
+                const text = this.currentInput.map(id => {
+                    return this.availableLetters.find(l => l.id === id).char;
+                }).join('');
+                this.dom.display.innerText = text;
+                this.dom.display.classList.add('active');
+            }
+        }
+
+
+        submitWord() {
+            const word = this.dom.display.innerText;
+           
+            if (this.currentInput.length < 2) {
+                this.triggerInvalid("¡Muy corta!");
+                return;
+            }
+
+
+            if (this.foundWords.has(word)) {
+                this.triggerInvalid("¡Ya encontrada!");
+                return;
+            }
+
+
+            // Validación contra diccionario
+            if (this.checkDictionary(word)) {
+                this.handleSuccess(word);
+            } else {
+                this.triggerInvalid("No en diccionario");
+            }
+        }
+
+
+        checkDictionary(word) {
+            // 1. Verificar lista estricta
+            if (DICTIONARY.has(word)) return true;
+
+
+            // 2. Fallback lógico para demostración:
+            // Si la palabra no está en la lista corta pero parece válida (tiene vocal y consonante)
+            // En una app real, esto sería una llamada API.
+            // Aquí permitimos palabras > 3 letras si tienen estructura silábica básica para no frustrar.
+            // (Simplificado para este ejemplo: solo aceptamos el diccionario hardcodeado para rigor educativo)
+            return false;
+        }
+
+
+        triggerInvalid(msg) {
+            this.dom.display.classList.add('invalid');
+            const originalText = this.dom.display.innerText;
+            this.dom.display.innerText = msg; // Feedback temporal
+           
+            setTimeout(() => {
+                this.dom.display.classList.remove('invalid');
+                this.dom.display.innerText = originalText;
+            }, 800);
+        }
+
+
+        handleSuccess(word) {
+            this.foundWords.add(word);
+            this.dom.display.classList.add('valid');
+           
+            // Actualizar palabra más larga
+            if (word.length > this.longestWord.length) {
+                this.longestWord = word;
+                this.celebrateNewRecord();
+            }
+
+
+            this.updateUI();
+           
+            // Resetear para siguiente palabra tras breve pausa
+            setTimeout(() => {
+                this.resetRoundState();
+            }, 1000);
+        }
+
+
+        celebrateNewRecord() {
+            this.dom.longestWordDisplay.style.animation = 'pop 0.5s';
+            setTimeout(() => this.dom.longestWordDisplay.style.animation = '', 500);
+        }
+
+
+        updateUI() {
+            // Actualizar lista
+            this.dom.totalCount.innerText = this.foundWords.size;
+            this.dom.longestWordDisplay.innerText = this.longestWord || "-";
+           
+            // Re-renderizar lista (solo lo necesario sería mejor, pero esto es simple)
+            this.dom.foundList.innerHTML = '';
+            // Convertir a array, invertir para ver las más nuevas primero
+            Array.from(this.foundWords).reverse().forEach(word => {
+                const li = document.createElement('li');
+                li.className = 'found-word-item';
+                li.innerHTML = `<span>${word}</span> <small>${word.length} letras</small>`;
+                this.dom.foundList.appendChild(li);
+            });
+        }
+
+
+        clearDOMList() {
+            this.dom.foundList.innerHTML = '';
+        }
+    }
+
+
+    // Iniciar juego cuando cargue el DOM
+    window.addEventListener('DOMContentLoaded', () => {
+        window.game = new WordGame();
+    });
+
+
+</script>
+
+
+</body>
+</html>
