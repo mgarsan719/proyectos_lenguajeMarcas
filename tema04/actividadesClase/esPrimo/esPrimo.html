@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificador de Números Primos</title>
+  <script>
+    // Función lógica: utiliza un nombre más descriptivo
+    function validarSiEsPrimo(valor) {
+      if (valor <= 1) return false;
+      
+      // Optimizamos el bucle revisando hasta la raíz cuadrada
+      for (let divisor = 2; divisor <= Math.sqrt(valor); divisor++) {
+        if (valor % divisor === 0) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    // Función de interfaz: maneja la interacción con el usuario
+    function ejecutarVerificacion() {
+      const entradaUsuario = prompt('Ingresa un número entero para verificar:');
+      const numeroEntero = parseInt(entradaUsuario);
+
+      if (isNaN(numeroEntero)) {
+        alert('Error: Por favor, ingresa un número válido.');
+      } else {
+        const esPrimo = validarSiEsPrimo(numeroEntero);
+        const mensajeFinal = esPrimo ? 'es un número primo' : 'no es un número primo';
+        
+        // CORRECCIÓN: Se usan backticks (`) para que ${} funcione correctamente
+        alert(` El número ${numeroEntero} ${mensajeFinal}.`);
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>Calculadora de Primos</h1>
+  <p>Haz clic en el botón para comenzar el análisis.</p>
+  <button onclick="ejecutarVerificacion()">Verificar Número</button>
+</body>
+</html>

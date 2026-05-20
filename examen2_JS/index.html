@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestor de Productos e Inventario</title>
+  <link rel="stylesheet" href="css/estilos.css" />
+</head>
+<body>
+  <h1>Gestor de Productos e Inventario</h1>
+
+
+  <div id="error-mensaje" class="error"></div>
+
+
+  <h2>Agregar Nuevo Producto</h2>
+  <form id="form-agregar">
+    <label for="nombre-agregar">Nombre del producto</label>
+    <input
+      type="text"
+      id="nombre-agregar"
+      placeholder="Ej: Teclado Mecánico"
+      required
+    />
+
+
+    <label for="lotes-agregar">Cantidades iniciales separadas por coma</label>
+    <input
+      type="text"
+      id="lotes-agregar"
+      placeholder="Ej: 10, 5, 20"
+    />
+
+
+    <button type="submit">Agregar Producto</button>
+  </form>
+
+
+  <h2>Agregar Lote a Producto Existente</h2>
+  <form id="form-agregar-lote">
+    <label for="nombre-lote">Nombre del producto</label>
+    <input
+      type="text"
+      id="nombre-lote"
+      placeholder="Ej: Teclado Mecánico"
+      required
+    />
+
+
+    <label for="cantidad-lote">Nueva cantidad</label>
+    <input
+      type="text"
+      id="cantidad-lote"
+      placeholder="Ej: 8"
+      required
+    />
+
+
+    <button type="submit">Agregar Lote</button>
+  </form>
+
+
+  <h2>Lista de Productos</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Stock total</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-productos">
+      <!-- Se llenará dinámicamente -->
+    </tbody>
+  </table>
+
+
+  <script src="js/script.js"></script>
+</body>
+</html>
